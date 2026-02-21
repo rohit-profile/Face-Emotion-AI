@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotion AI Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Emotion AI</h2>
+    <div class="profile-box">
+        <p><strong>Model:</strong>Deep Learning (CNN)</p>
+        <p><strong>Status:</strong> <span class="status-active">● Active</span></p>
+    </div>
+    <ul class="menu">
+        <li onclick="showSection('home')">🏠 Dashboard</li>
+        <li onclick="showSection('predict')">🧠 Emotion Analysis</li>
+        <li onclick="showSection('analytics')">📊 Analytics</li>
+         <li onclick="showSection('features')">⭐ Features</li>
+        <li onclick="showSection('about')">ℹ About</li>
+        <li onclick="showSection('contact')">📩 Contact</li>
+        
+    </ul>
+</div>
+<!-- Main Content -->
+<div class="main">
+    <div class="header">Face Emotion Detection System</div>
+
+    <!-- Dashboard -->
+<div id="home" class="section active">
+    <div class="card">
+        <h2>📊 Dashboard Overview</h2>
+
+        <p>
+            Welcome to the <strong>AI-Powered Facial Emotion Recognition Dashboard</strong>. 
+            This system leverages <strong>Deep Learning (CNN)</strong> and <strong>OpenCV</strong> to detect and classify human emotions in real-time. 
+            The dashboard is designed to provide both high-level insights and detailed analytics for research, interactive AI, mental health, and educational applications.
+        </p>
+
+        <h3>⚡ Key Metrics</h3>
+        <div class="stats-grid">
+            <div class="stat-box"><h3>7</h3><p>Emotion Classes</p></div>
+            <div class="stat-box"><h3>CNN</h3><p>Model Type</p></div>
+            <div class="stat-box"><h3>OpenCV</h3><p>Face Detection</p></div>
+            <div class="stat-box"><h3>Flask</h3><p>Backend Framework</p></div>
+            <div class="stat-box"><h3>Realtime</h3><p>Processing</p></div>
+            <div class="stat-box"><h3>Multi-Face</h3><p>Support</p></div>
+            <div class="stat-box"><h3>Cross-Platform</h3><p>Web Interface</p></div>
+            <div class="stat-box"><h3>High Accuracy</h3><p>Predictions</p></div>
+        </div>
+
+        <h3>💡 Quick Insights</h3>
+        <ul class="feature-list">
+            <li>✔ Real-time detection of multiple faces with individual emotion analysis.</li>
+            <li>✔ Visualization of emotions through interactive charts and dashboards.</li>
+            <li>✔ Accurate predictions using a CNN model trained on thousands of labeled images.</li>
+            <li>✔ Cross-platform support: access via desktop or laptop browsers.</li>
+            <li>✔ Ideal for research, mental health tracking, e-learning engagement, and interactive AI applications.</li>
+            <li>✔ Customizable for adding new features or integrating with other AI systems.</li>
+        </ul>
+
+        <h3>🎯 Benefits</h3>
+        <ul class="feature-list">
+            <li>🎓 Educators can monitor student engagement and adapt teaching methods in real-time.</li>
+            <li>🧠 Therapists can track emotional trends for better mental health assessment.</li>
+            <li>🏢 Businesses can enhance user experience by analyzing emotional responses.</li>
+            <li>🤖 Developers can leverage the framework for AI-based interactive applications.</li>
+        </ul>
+
+        <h3>📊 Applications</h3>
+        <ul class="feature-list">
+            <li>👩‍🏫 E-learning platforms for engagement tracking</li>
+            <li>🧠 Mental health monitoring tools</li>
+            <li>🏢 Smart surveillance systems</li>
+            <li>🤖 Emotion-aware interactive AI apps and chatbots</li>
+            <li>📈 Behavioral research and human-computer interaction studies</li>
+        </ul>
+    </div>
+</div>
+
+    <!-- Emotion Predict -->
+<div id="predict" class="section">
+    <div class="card">
+        <h2>🧠 Emotion Analysis</h2>
+        <p>
+            Upload an image or capture a live photo to detect and analyze facial emotions.
+            The system processes the image using a <strong>CNN-based deep learning model</strong>
+            and displays the detected emotions along with the processed image.
+        </p>
+
+        <!-- Image Upload -->
+        <h3>📁 Upload Image</h3>
+        <form method="POST" enctype="multipart/form-data" class="emotion-form">
+            <input type="file" name="image" accept="image/*">
+            <br><br>
+            <input type="submit" value="Run Emotion Detection" class="submit-btn">
+        </form>
+
+        <hr style="margin:30px 0;">
+
+        <!-- Live Camera Section -->
+        <h3>📷 Live Camera Capture</h3>
+
+        <video id="video" width="350" autoplay style="border-radius:10px;"></video>
+        <br><br>
+
+        <button type="button" onclick="capturePhoto()" class="submit-btn">
+            Capture Photo
+        </button>
+
+        <form method="POST">
+            <input type="hidden" name="captured_image" id="captured_image">
+            <br>
+            <input type="submit" value="Detect Captured Emotion" class="submit-btn">
+        </form>
+
+        <canvas id="canvas" style="display:none;"></canvas>
+
+        {% if emotion_text %}
+        <div class="result" id="emotionResult">
+            <h3>Detected Emotion:</h3>
+            <p>{{ emotion_text }}</p>
+        </div>
+        {% endif %}
+
+        {% if image_data %}
+        <div class="output-image">
+            <h3>Processed Image</h3>
+            <img src="{{ image_data }}" alt="Processed Image" width="350">
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const video = document.getElementById('video');
+
+// Open webcam
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => {
+    video.srcObject = stream;
+})
+.catch(err => {
+    alert("Camera access denied or not available.");
+});
+
+function capturePhoto() {
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0);
+
+    const dataURL = canvas.toDataURL('image/png');
+    document.getElementById('captured_image').value = dataURL;
+
+    alert("Photo captured! Now click 'Detect Captured Emotion'");
+}
+</script>
+    <!-- Analytics -->
+<div id="analytics" class="section">
+    <div class="card">
+        <h2>📊 Emotion Analytics</h2>
+
+        <p>
+            The <strong>Emotion Analytics</strong> module provides a clear and interactive visualization of detected emotions over time. 
+            It helps users understand patterns, monitor engagement, and analyze emotional responses for individuals or groups in real-time.
+        </p>
+
+        <h3>🔹 Key Capabilities</h3>
+        <ul class="feature-list">
+            <li>✔ Real-time emotion tracking with dynamic updates.</li>
+            <li>✔ Interactive bar charts displaying counts of each emotion.</li>
+            <li>✔ Historical analysis to identify trends and patterns.</li>
+            <li>✔ Supports multiple users and multi-face tracking in one frame.</li>
+            <li>✔ Easy-to-read, color-coded dashboard visualization.</li>
+        </ul>
+
+        <h3>📈 How It Works</h3>
+        <ol>
+            <li>The system collects emotion data from uploaded images or live video feeds.</li>
+            <li>Each detected face is classified by the CNN-based emotion model.</li>
+            <li>Emotion counts are stored and updated dynamically for analytics.</li>
+            <li>Charts display the distribution of emotions in real-time.</li>
+            <li>Users can monitor trends over time to gain actionable insights.</li>
+        </ol>
+
+        <h3>💡 Benefits</h3>
+        <ul class="feature-list">
+            <li>🎓 Teachers can monitor student engagement and emotional responses in e-learning.</li>
+            <li>🧠 Therapists can analyze mood trends for mental health monitoring.</li>
+            <li>🏢 Organizations can use emotion patterns to enhance user experience or customer satisfaction.</li>
+            <li>🤖 Developers can integrate analytics for smarter AI interaction.</li>
+        </ul>
+
+        <h3>📊 Visualization</h3>
+        <p>
+            The chart below provides a real-time bar representation of emotion detection results. 
+            Each emotion is represented by a unique color for quick identification: <br>
+            <strong>Angry:</strong> Red, <strong>Disgust:</strong> Orange, <strong>Fear:</strong> Purple, <strong>Happy:</strong> Green, 
+            <strong>Neutral:</strong> Blue, <strong>Sad:</strong> Indigo, <strong>Surprise:</strong> Yellow.
+        </p>
+
+        <canvas id="emotionChart" style="max-width:100%; height:400px;"></canvas>
+    </div>
+</div>
+
+    <!-- Features -->
+<div id="features" class="section">
+    <div class="card">
+        <h2>⭐ System Features</h2>
+
+        <p>
+            The Facial Emotion Recognition system is designed to deliver a comprehensive, real-time AI experience.
+            Each feature has been carefully engineered to ensure accuracy, speed, and usability for various applications.
+        </p>
+
+        <h3>🧠 Advanced AI & Detection</h3>
+        <ul class="feature-list">
+            <li>✔ <strong>CNN-Based Emotion Model:</strong> High-accuracy classification trained on thousands of facial images.</li>
+            <li>✔ <strong>Haarcascade Face Detection:</strong> Efficient detection of faces in live video or static images.</li>
+            <li>✔ <strong>Multi-Face Support:</strong> Detects multiple faces simultaneously and predicts emotions individually.</li>
+        </ul>
+
+        <h3>🎨 Interactive Visualization</h3>
+        <ul class="feature-list">
+            <li>✔ <strong>Processed Image Rendering:</strong> Highlights faces with bounding boxes and shows predicted emotions in real-time.</li>
+            <li>✔ <strong>Analytics & Charts:</strong> Visual representation of emotional trends over time for research or engagement monitoring.</li>
+            <li>✔ <strong>Emotion Emojis:</strong> Adds intuitive emoji indicators to each detected emotion.</li>
+        </ul>
+
+        <h3>⚡ Performance & Usability</h3>
+        <ul class="feature-list">
+            <li>✔ <strong>Real-Time Processing:</strong> Optimized for frame-by-frame analysis with minimal lag.</li>
+            <li>✔ <strong>User-Friendly Interface:</strong> Simple, clean design for easy interaction with the dashboard.</li>
+            <li>✔ <strong>Cross-Platform Compatibility:</strong> Works on desktops, laptops, and modern web browsers.</li>
+            <li>✔ <strong>Fast Loading & Lightweight:</strong> Minimal resources required, no heavy installations needed.</li>
+        </ul>
+
+        <h3>📊 Analytics & Insights</h3>
+        <ul class="feature-list">
+            <li>✔ Real-time emotion tracking for individuals or groups.</li>
+            <li>✔ Historical data storage and trend analysis for research purposes.</li>
+            <li>✔ Interactive bar charts for each emotion class.</li>
+        </ul>
+
+        <h3>💡 Practical Applications</h3>
+        <ul class="feature-list">
+            <li>🎓 Monitor student engagement in online learning platforms</li>
+            <li>🧠 Assist therapists in mental health tracking</li>
+            <li>🏢 Implement in smart surveillance or emotion-aware systems</li>
+            <li>🤖 Build interactive AI apps that respond to human emotions</li>
+            <li>📈 Conduct behavioral research and analyze emotional trends</li>
+        </ul>
+
+        <p>
+            Overall, the system combines AI precision, real-time processing, and user-friendly design,
+            making it a versatile tool for education, healthcare, research, and interactive AI applications.
+        </p>
+    </div>
+</div>
+
+    <!-- About -->
+ <div id="about" class="section">
+    <div class="card">
+        <h2>ℹ️ About The Project</h2>
+
+        <p>
+            The <strong>Facial Emotion Recognition System</strong> is an AI-powered web application
+            that detects and classifies human emotions in real-time using a
+            <strong>Convolutional Neural Network (CNN)</strong>. It leverages deep learning and computer vision
+            to analyze facial expressions from images or live video feeds.
+        </p>
+
+        <h3>🚀 Technology Stack</h3>
+        <ul class="feature-list">
+            <li>✅ <strong>Backend:</strong> Flask (Python Web Framework)</li>
+            <li>✅ <strong>Face Detection:</strong> OpenCV with Haarcascade for accurate real-time detection</li>
+            <li>✅ <strong>Emotion Classification:</strong> CNN trained on thousands of labeled facial images</li>
+            <li>✅ <strong>Frontend:</strong> HTML, CSS, JavaScript, Chart.js for analytics visualization</li>
+            <li>✅ <strong>Deployment:</strong> Cross-platform web interface accessible via desktop or laptop browsers</li>
+        </ul>
+
+        <h3>😊 Supported Emotions</h3>
+        <div class="emotion-tags">
+            <span>Angry</span>
+            <span>Disgust</span>
+            <span>Fear</span>
+            <span>Happy</span>
+            <span>Neutral</span>
+            <span>Sad</span>
+            <span>Surprise</span>
+        </div>
+
+        <h3>📊 How It Works</h3>
+        <ol>
+            <li>User uploads an image or uses live camera feed.</li>
+            <li>The system detects faces in the frame using OpenCV.</li>
+            <li>Each detected face is processed by the CNN model to predict emotions.</li>
+            <li>Detected emotions are displayed on the dashboard along with bounding boxes.</li>
+            <li>Analytics and charts provide trends and patterns over time for multiple users.</li>
+        </ol>
+
+        <h3>💡 Applications</h3>
+        <ul class="feature-list">
+            <li>🎓 Track student engagement in e-learning platforms</li>
+            <li>🧠 Assist therapists in mental health monitoring</li>
+            <li>🏢 Integrate with smart surveillance for emotion-aware systems</li>
+            <li>🤖 Build interactive AI applications that respond to human emotions</li>
+            <li>📈 Analyze emotional trends for research and behavioral studies</li>
+        </ul>
+
+        <p>
+            This project demonstrates the practical application of Artificial Intelligence in
+            <strong>Human-Computer Interaction (HCI)</strong>. It is optimized for accuracy, speed, and
+            real-time performance, making it suitable for both research and practical use cases.
+        </p>
+    </div>
+   
+  
+    <div id="Contact" class="section">
+    <div class="card">
+        <h2>📩 Contact & Professional Profile</h2>
+
+        <p>
+            Thank you for using the <strong>Emotion Detection System</strong>.
+            For collaboration, project inquiries, research discussions, or technical support,
+            feel free to connect using the details below.
+        </p>
+
+        <!-- Contact Information -->
+        <div class="contact-details">
+            <h3>📌 Professional Details</h3>
+            <p><strong>Name:</strong> Rohit </p>
+            <p><strong>Email:</strong> rohit.profile12@gmail.com</p>
+            <p><strong>Location:</strong> Noida, Uttar Pradesh, India</p>
+            <p><strong>LinkedIn:</strong> 
+                <a href="https://www.linkedin.com/in/rohit-profile12" target="_blank">
+                    linkedin.com/in/rohit-profile12
+                </a>
+            </p>
+            <p><strong>GitHub:</strong> 
+                <a href="https://github.com/rohit-profile" target="_blank">
+                    github.com/rohit-profile
+                </a>
+            </p>
+        </div>
+
+        <hr style="margin:25px 0;">
+
+        <!-- Contact Form -->
+        <h3>✉ Send a Message</h3>
+
+        <form class="contact-form" onsubmit="showMessage(event)">
+            <label>Your Name</label><br>
+            <input type="text" placeholder="Rohit" required><br><br>
+
+            <label>Your Email</label><br>
+            <input type="email" placeholder="rohit.profile12@gmail.com" required><br><br>
+
+            <label>Your Message</label><br>
+            <textarea rows="5" 
+            placeholder="Share your project idea, collaboration proposal, research discussion, or technical query. Please provide sufficient details to help us understand your requirements clearly." 
+            required></textarea><br><br>
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+
+        <div id="successMessage" style="display:none; margin-top:15px; color:green; font-weight:bold;">
+            ✅ Thank you! Your message has been submitted successfully.
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+function showMessage(event) {
+    event.preventDefault();
+    document.getElementById("successMessage").style.display = "block";
+}
+</script>
+
+</div>
+<script>
+function showSection(id){
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
+
+// Auto-open Predict after detection
+{% if emotion_text %}
+showSection('predict');
+{% endif %}
+
+// Emoji Add
+const emotionText = document.getElementById("emotionResult");
+if (emotionText){
+    let text = emotionText.innerText.toLowerCase();
+    if(text.includes("happy")) emotionText.innerHTML += " 😄";
+    else if(text.includes("sad")) emotionText.innerHTML += " 😢";
+    else if(text.includes("angry")) emotionText.innerHTML += " 😠";
+    else if(text.includes("surprise")) emotionText.innerHTML += " 😲";
+    else if(text.includes("fear")) emotionText.innerHTML += " 😨";
+    else if(text.includes("disgust")) emotionText.innerHTML += " 🤢";
+}
+
+// Chart
+let emotionCounts = { Angry:0, Disgust:0, Fear:0, Happy:0, Neutral:0, Sad:0, Surprise:0 };
+
+{% if emotion_text %}
+let detected = "{{ emotion_text }}";
+Object.keys(emotionCounts).forEach(e=>{
+    if(detected.includes(e)){
+        emotionCounts[e] += 1;
+    }
+});
+{% endif %}
+
+new Chart(document.getElementById('emotionChart'), {
+    type: 'bar',
+    data: {
+        labels: Object.keys(emotionCounts),
+        datasets: [{
+            data: Object.values(emotionCounts),
+            backgroundColor:['#ef4444','#f97316','#a855f7','#22c55e','#3b82f6','#6366f1','#eab308'],
+            borderRadius: 8
+        }]
+    },
+    options: {
+        plugins: {legend:{display:false}},
+        scales: {y:{beginAtZero:true}}
+    }
+});
+</script>
+
+</body>
+</html>
