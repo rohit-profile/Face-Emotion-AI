@@ -60,26 +60,3 @@ The dataset contains grayscale images of faces labeled with seven emotion catego
 ## Live Link-->(https://huggingface.co/spaces/rohit-profile/Face-Emotion-AI)
 ---
 
-## Project Workflow
-```mermaid
-flowchart TD
-    %% Data Preparation
-    A[📥 Download Dataset (FER-2013)] --> B[🧹 Data Preprocessing]
-    B --> C[🔍 Exploratory Data Analysis (EDA)]
-    
-    %% Model Development
-    C --> D[🏗️ CNN Model Building]
-    D --> E[⚡ Model Training & Optimization]
-    E --> F[📊 Model Evaluation (Accuracy, F1, Confusion Matrix)]
-    
-    %% Deployment
-    F --> G[🌐 Deployment: Flask + HTML on Hugging Face]
-    
-    %% Styling nodes
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#fffa8d,stroke:#333,stroke-width:2px
-    style C fill:#8dd3ff,stroke:#333,stroke-width:2px
-    style D fill:#a8ff8d,stroke:#333,stroke-width:2px
-    style E fill:#ffb347,stroke:#333,stroke-width:2px
-    style F fill:#ff7f7f,stroke:#333,stroke-width:2px
-    style G fill:#d580ff,stroke:#333,stroke-width:2px
