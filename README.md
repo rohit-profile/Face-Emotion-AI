@@ -1,6 +1,6 @@
 # Face Emotion AI
 
-![Python](https://img.shields.io/badge/python-3.10-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Issues](https://img.shields.io/github/issues/<username>/<repo_name>) ![Kaggle Dataset](https://img.shields.io/badge/dataset-FER--2013-orange) ![Hugging Face](https://img.shields.io/badge/deploy-HuggingFace-purple)
+![Python](https://img.shields.io/badge/python-3.10-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Issues](https://img.shields.io/github/issues/<username>/<repo_name>) ![Kaggle Dataset](https://img.shields.io/badge/dataset-FER--2013-orange) ![Hugging Face]([https://img.shields.io/badge/deploy-HuggingFace-purple](https://huggingface.co/spaces/rohit-profile/Face-Emotion-AI))
 
 ## Project Overview
 Face Emotion AI is a computer vision project that detects human emotions from facial expressions. Using deep learning, this project classifies emotions such as happiness, sadness, anger, surprise, fear, disgust, and neutral. The model can be deployed in applications like mood tracking, mental health monitoring, and human-computer interaction systems.  
@@ -62,10 +62,24 @@ The dataset contains grayscale images of faces labeled with seven emotion catego
 
 ## Project Workflow
 ```mermaid
-flowchart LR
-    A[Download Dataset] --> B[Data Preprocessing]
-    B --> C[Exploratory Data Analysis]
-    C --> D[CNN Model Building]
-    D --> E[Model Training]
-    E --> F[Model Evaluation]
-    F --> G[Deployment (Flask + HTML on Hugging Face)]
+flowchart TD
+    %% Data Preparation
+    A[📥 Download Dataset (FER-2013)] --> B[🧹 Data Preprocessing]
+    B --> C[🔍 Exploratory Data Analysis (EDA)]
+    
+    %% Model Development
+    C --> D[🏗️ CNN Model Building]
+    D --> E[⚡ Model Training & Optimization]
+    E --> F[📊 Model Evaluation (Accuracy, F1, Confusion Matrix)]
+    
+    %% Deployment
+    F --> G[🌐 Deployment: Flask + HTML on Hugging Face]
+    
+    %% Styling nodes
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#fffa8d,stroke:#333,stroke-width:2px
+    style C fill:#8dd3ff,stroke:#333,stroke-width:2px
+    style D fill:#a8ff8d,stroke:#333,stroke-width:2px
+    style E fill:#ffb347,stroke:#333,stroke-width:2px
+    style F fill:#ff7f7f,stroke:#333,stroke-width:2px
+    style G fill:#d580ff,stroke:#333,stroke-width:2px
