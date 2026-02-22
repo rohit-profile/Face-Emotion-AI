@@ -12,25 +12,28 @@
 <div class="sidebar">
     <h2>Emotion AI</h2>
     <div class="profile-box">
-        <p><strong>Model:</strong>Deep Learning (CNN)</p>
-        <p><strong>Status:</strong> <span class="status-active">● Active</span></p>
+        <p><strong>AI Engine:</strong> Deep Learning CNN v2.1</p>
+        <p><strong>Status:</strong> <span class="status-active">● Live</span></p>
+        <p><strong>Deployment:</strong>🤗 HuggingFaceAI </p>
+        <p><strong>Last Sync:</strong> Real-Time</p>
     </div>
     <ul class="menu">
-        <li onclick="showSection('home')">🏠 Dashboard</li>
-        <li onclick="showSection('predict')">🧠 Emotion Analysis</li>
-        <li onclick="showSection('analytics')">📊 Analytics</li>
-         <li onclick="showSection('features')">⭐ Features</li>
-        <li onclick="showSection('about')">ℹ About</li>
-        <li onclick="showSection('contact')">📩 Contact</li>
+        <li onclick="showSection('home', this)">🏠 Dashboard</li>
+        <li onclick="showSection('predict', this)">🔍 Emotion Detection System</li>
+        <li onclick="showSection('analytics', this)">📊 Analytics</li>
+        <li onclick="showSection('features', this)">⭐ Features</li>
+        <li onclick="showSection('about', this)">ℹ About</li>
+        <li onclick="showSection('contact', this)">📩 Contact</li>
         
+       
     </ul>
 </div>
 <!-- Main Content -->
 <div class="main">
-    <div class="header">Face Emotion Detection System</div>
+    <div class="header">Welcome To Emotion AI  </div>
 
-    <!-- Dashboard -->
-<div id="home" class="section active">
+    
+ <div id="home" class="section active">
     <div class="card">
         <h2>📊 Dashboard Overview</h2>
 
@@ -79,16 +82,19 @@
             <li>📈 Behavioral research and human-computer interaction studies</li>
         </ul>
     </div>
-</div>
+ </div>
 
-    <!-- Emotion Predict -->
-<div id="predict" class="section">
+
+  
+    <!-- Emotion Detection System -->
+ <div id="predict" class="section">
     <div class="card">
-        <h2>🧠 Emotion Analysis</h2>
+        <h2>🔍 Emotion Detection System</h2>
         <p>
-            Upload an image or capture a live photo to detect and analyze facial emotions.
-            The system processes the image using a <strong>CNN-based deep learning model</strong>
-            and displays the detected emotions along with the processed image.
+            📷 Upload an image or capture a live photo to analyze facial expressions.
+            The system leverages a <strong>Convolutional Neural Network (CNN)-based deep learning model</strong> 
+            to process the image and accurately detect human emotions.
+            📊 The identified emotions are presented along with the processed image results.
         </p>
 
         <!-- Image Upload -->
@@ -133,36 +139,74 @@
         </div>
         {% endif %}
     </div>
-</div>
+ </div>
 
-<script>
-const video = document.getElementById('video');
 
-// Open webcam
-navigator.mediaDevices.getUserMedia({ video: true })
-.then(stream => {
-    video.srcObject = stream;
-})
-.catch(err => {
-    alert("Camera access denied or not available.");
-});
+ <script>
+ // Open webcam
 
-function capturePhoto() {
+ let video = document.getElementById('video');
+ let stream = null;
+
+ // Camera start (button click par)
+ function startCamera() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+        stream = s;
+        video.srcObject = stream;
+    })
+    .catch(err => {
+        alert("Camera access denied or not available.");
+    });
+ }
+
+ function capturePhoto() {
+
+    if (!stream) {
+        startCamera();
+
+        // Wait until camera loads
+        setTimeout(() => {
+            takeSnapshot();
+        }, 1000);
+
+    } else {
+        takeSnapshot();
+    }
+ }
+
+ function takeSnapshot() {
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0);
+    // ✅ Resize to reduce size (max width 400px)
+    const maxWidth = 400;
+    const scale = maxWidth / video.videoWidth;
 
-    const dataURL = canvas.toDataURL('image/png');
+    canvas.width = maxWidth;
+    canvas.height = video.videoHeight * scale;
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // ✅ Convert to JPEG with compression (0.6 quality)
+    const dataURL = canvas.toDataURL('image/jpeg', 0.6);
+
     document.getElementById('captured_image').value = dataURL;
 
+    // ✅ Optional: Stop camera after capture
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+
     alert("Photo captured! Now click 'Detect Captured Emotion'");
-}
-</script>
+ }
+ </script>
+
+
+  
     <!-- Analytics -->
-<div id="analytics" class="section">
+ <div id="analytics" class="section">
     <div class="card">
         <h2>📊 Emotion Analytics</h2>
 
@@ -207,10 +251,13 @@ function capturePhoto() {
 
         <canvas id="emotionChart" style="max-width:100%; height:400px;"></canvas>
     </div>
-</div>
+ </div>
+
+
+
 
     <!-- Features -->
-<div id="features" class="section">
+ <div id="features" class="section">
     <div class="card">
         <h2>⭐ System Features</h2>
 
@@ -262,8 +309,9 @@ function capturePhoto() {
             making it a versatile tool for education, healthcare, research, and interactive AI applications.
         </p>
     </div>
-</div>
+ </div>
 
+  
     <!-- About -->
  <div id="about" class="section">
     <div class="card">
@@ -313,16 +361,27 @@ function capturePhoto() {
             <li>🤖 Build interactive AI applications that respond to human emotions</li>
             <li>📈 Analyze emotional trends for research and behavioral studies</li>
         </ul>
-
+        
+       <h3>🚀 Professional & Startup Ready</h3>
+        <ul class="feature-list">
+          <li>Cloud-hosted SaaS platform with auto-scaling</li>
+          <li>Secure, session-based handling of user data</li>
+          <li>Designed for researchers, educators, enterprises, and AI developers</li>
+          <li>Multi-platform access (desktop, laptop, tablets)</li>
+          <li>AI Ethics & Privacy built-in</li>
+        </ul>
         <p>
             This project demonstrates the practical application of Artificial Intelligence in
             <strong>Human-Computer Interaction (HCI)</strong>. It is optimized for accuracy, speed, and
             real-time performance, making it suitable for both research and practical use cases.
         </p>
     </div>
+ </div>
    
-  
-    <div id="Contact" class="section">
+
+
+ <!-- Contact  --> 
+ <div id="contact" class="section">
     <div class="card">
         <h2>📩 Contact & Professional Profile</h2>
 
@@ -336,7 +395,11 @@ function capturePhoto() {
         <div class="contact-details">
             <h3>📌 Professional Details</h3>
             <p><strong>Name:</strong> Rohit </p>
-            <p><strong>Email:</strong> rohit.profile12@gmail.com</p>
+            <p><strong>Email:</strong> 
+             <a href="mailto:rohit.profile12@gmail.com">
+             rohit.profile12@gmail.com
+             </a>
+            </p>
             <p><strong>Location:</strong> Noida, Uttar Pradesh, India</p>
             <p><strong>LinkedIn:</strong> 
                 <a href="https://www.linkedin.com/in/rohit-profile12" target="_blank">
@@ -349,7 +412,7 @@ function capturePhoto() {
                 </a>
             </p>
         </div>
-
+ 
         <hr style="margin:25px 0;">
 
         <!-- Contact Form -->
@@ -357,10 +420,10 @@ function capturePhoto() {
 
         <form class="contact-form" onsubmit="showMessage(event)">
             <label>Your Name</label><br>
-            <input type="text" placeholder="Rohit" required><br><br>
+            <input type="text" placeholder="Your Name " required><br><br>
 
             <label>Your Email</label><br>
-            <input type="email" placeholder="rohit.profile12@gmail.com" required><br><br>
+            <input type="email" placeholder="Your Email " required><br><br>
 
             <label>Your Message</label><br>
             <textarea rows="5" 
@@ -373,20 +436,18 @@ function capturePhoto() {
             ✅ Thank you! Your message has been submitted successfully.
         </div>
     </div>
-</div>
+ </div>
 
+  
 
-
-
-<script>
-function showMessage(event) {
+ <script>
+ function showMessage(event) {
     event.preventDefault();
-    document.getElementById("successMessage").style.display = "block";
-}
+ document.getElementById("successMessage").style.display = "block";
+ }
 </script>
-
 </div>
-<script>
+ <script>
 function showSection(id){
     document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
     document.getElementById(id).classList.add("active");
@@ -408,6 +469,7 @@ if (emotionText){
     else if(text.includes("fear")) emotionText.innerHTML += " 😨";
     else if(text.includes("disgust")) emotionText.innerHTML += " 🤢";
 }
+   
 
 // Chart
 let emotionCounts = { Angry:0, Disgust:0, Fear:0, Happy:0, Neutral:0, Sad:0, Surprise:0 };
